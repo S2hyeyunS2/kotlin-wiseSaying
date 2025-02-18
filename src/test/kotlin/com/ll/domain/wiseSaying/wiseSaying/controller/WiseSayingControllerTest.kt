@@ -1,9 +1,10 @@
-package com.ll
+package com.ll.domain.wiseSaying.wiseSaying.controller
+import com.ll.TestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import kotlin.test.Test
 
-class AppTest {
+class WiseSayingControllerTest {
     @Test
     @DisplayName("명언 작성")
     fun t1() {
@@ -40,7 +41,7 @@ class AppTest {
 
     @Test
     fun `명언 삭제`(){
-        val result=TestRunner.run(
+        val result= TestRunner.run(
             """
                 등록
                 나의 죽음을 적들에게 알리지 말라.
@@ -60,7 +61,7 @@ class AppTest {
 
     @Test
     fun `명언 수정`(){
-        val result=TestRunner.run(
+        val result= TestRunner.run(
             """
                 등록
                 나의 죽음을 적들에게 알리지 말라.
