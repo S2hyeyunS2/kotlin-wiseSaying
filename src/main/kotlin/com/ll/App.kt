@@ -46,14 +46,17 @@ class App {
                     println("id를 정확히 입력해주세요.")
                     continue
                 }
-                val removed=wiseSayings.removeIf { it.id == id }
 
-                if(removed){
-                    println("${id}번 명언을 삭제하였습니다.")
+                val wiseSaying=wiseSayings.firstOrNull {it.id == id}
+
+                if(wiseSaying==null){
+                    println("해당 id의 명언은 존재하지 않습니다.")
+                    continue
                 }
-                else{
-                    println("${id}번 명언은 존재하지 않습니다.")
-                }
+
+                wiseSayings.remove(wiseSaying)
+
+                println("${id}번 명언을 삭제하였습니다.")
             }
         }
     }
