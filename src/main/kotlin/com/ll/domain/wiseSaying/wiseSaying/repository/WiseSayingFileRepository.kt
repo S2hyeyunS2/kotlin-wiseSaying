@@ -11,9 +11,7 @@ class WiseSayingFileRepository : WiseSayingRepository {
         }
 
     override fun save(wiseSaying: WiseSaying): WiseSaying {
-        if (wiseSaying.isNew()) {
-            wiseSaying.id = loadLastIdAndIncrease()
-        }
+        if (wiseSaying.isNew()) wiseSaying.id = loadLastIdAndIncrease()
 
         saveOnDisk(wiseSaying)
 
@@ -30,14 +28,19 @@ class WiseSayingFileRepository : WiseSayingRepository {
 
     override fun findById(id: Int): WiseSaying? {
         return tableDirPath
+            .resolve("$id.json")
             .toFile()
-            .listFiles()
-            ?.find { it.name == "${id}.json" }
-            ?.let { WiseSaying.fromJsonStr(it.readText()) }
+            .takeIf { it.exists() }
+            ?.readText()
+            ?.let(WiseSaying.Companion::fromJsonStr)
     }
 
     override fun delete(wiseSaying: WiseSaying) {
-
+        tableDirPath
+            .resolve("${wiseSaying.id}.json")
+            .toFile()
+            .takeIf { it.exists() }
+            ?.delete()
     }
 
     override fun clear() {
@@ -61,25 +64,26 @@ class WiseSayingFileRepository : WiseSayingRepository {
 
     internal fun saveLastId(lastId: Int) {
         mkTableDirsIfNotExists()
+
         tableDirPath.resolve("lastId.txt")
             .toFile()
             .writeText(lastId.toString())
     }
 
     internal fun loadLastId(): Int {
-        return try{
+        return try {
             tableDirPath.resolve("lastId.txt")
                 .toFile()
                 .readText()
                 .toInt()
-        }catch (e: Exception){
+        } catch (e: Exception) {
             0
         }
     }
 
-    private fun loadLastIdAndIncrease(): Int{
-        val lastId=loadLastId()
-        saveLastId(lastId+1)
+    private fun loadLastIdAndIncrease(): Int {
+        val lastId = loadLastId()
+        saveLastId(lastId + 1)
         return lastId
     }
 }
