@@ -11,7 +11,7 @@ class WiseSayingFileRepository : WiseSayingRepository {
         }
 
     override fun save(wiseSaying: WiseSaying): WiseSaying {
-        if (wiseSaying.isNew()) wiseSaying.id = loadLastIdAndIncrease()
+        if (wiseSaying.isNew()) wiseSaying.id = genNextId()
 
         saveOnDisk(wiseSaying)
 
@@ -19,6 +19,7 @@ class WiseSayingFileRepository : WiseSayingRepository {
     }
 
     override fun isEmpty(): Boolean {
+        //숫자.json 파일이 하나라도 있으면 false
         return tableDirPath.toFile()
             .listFiles()
             ?.none { it.name.endsWith(".json") }
@@ -89,9 +90,9 @@ class WiseSayingFileRepository : WiseSayingRepository {
         }
     }
 
-    private fun loadLastIdAndIncrease(): Int {
-        val lastId = loadLastId()
-        saveLastId(lastId + 1)
-        return lastId
+    private fun genNextId(): Int {
+        return (loadLastId()+1).also {
+            saveLastId(it)
+        }
     }
 }
