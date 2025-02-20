@@ -10,4 +10,5 @@ interface WiseSayingRepository {
     fun findById(id: Int): WiseSaying?
     fun delete(wiseSaying: WiseSaying)
     fun clear()
+    fun build()
 }
