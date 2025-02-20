@@ -4,7 +4,7 @@ import com.ll.global.bean.SingletonScope
 import com.ll.global.rq.Rq
 
 class WiseSayingController {
-    private val wiseSyaingService= SingletonScope.wiseSayingService
+    private val wiseSayingService = SingletonScope.wiseSayingService
 
     fun actionWrite(rq: Rq) {
         print("명언 : ")
@@ -12,22 +12,37 @@ class WiseSayingController {
         print("작가 : ")
         val author = readlnOrNull()!!.trim()
 
-        val wiseSaying=wiseSyaingService.write(content, author)
+        val wiseSaying = wiseSayingService.write(content, author)
 
         println("${wiseSaying.id}번 명언이 등록되었습니다.")
     }
 
     fun actionList(rq: Rq) {
-        if (wiseSyaingService.isEmpty()) {
+        if (wiseSayingService.isEmpty()) {
             println("등록된 명언이 없습니다.")
             return
+        }
+
+        val keywordType = rq.getParamValue("keywordType", "content")
+        val keyword = rq.getParamValue("keyword", "")
+
+        val wiseSayings = if (keyword.isNotBlank())
+            wiseSayingService.findByKeyword(keywordType, keyword)
+        else
+            wiseSayingService.findAll()
+
+        if (keyword.isNotBlank()) {
+            println("----------------------")
+            println("검색타입 : $keywordType")
+            println("검색어 : $keyword")
+            println("----------------------")
         }
 
         println("번호 / 작가 / 명언")
 
         println("----------------------")
 
-        wiseSyaingService.findAll().forEach {
+        wiseSayings.forEach {
             println("${it.id} / ${it.author} / ${it.content}")
         }
     }
@@ -40,14 +55,15 @@ class WiseSayingController {
             return
         }
 
-        val wiseSaying = wiseSyaingService.findById(id)
+        val wiseSaying = wiseSayingService
+            .findById(id)
 
         if (wiseSaying == null) {
-            println("해당 id의 명언은 존재하지 않습니다.")
+            println("${id}번 명언은 존재하지 않습니다.")
             return
         }
 
-        wiseSyaingService.delete(wiseSaying)
+        wiseSayingService.delete(wiseSaying)
 
         println("${id}번 명언을 삭제하였습니다.")
     }
@@ -60,29 +76,29 @@ class WiseSayingController {
             return
         }
 
-        val wiseSaying = wiseSyaingService.findById(id)
+        val wiseSaying = wiseSayingService.findById(id)
 
         if (wiseSaying == null) {
-            println("해당 id의 명언은 존재하지 않습니다.")
+            println("${id}번 명언은 존재하지 않습니다.")
             return
         }
 
         println("명언(기존) : ${wiseSaying.content}")
-        print("명언: ")
+        print("명언 : ")
         val content = readlnOrNull()!!.trim()
 
         println("작가(기존) : ${wiseSaying.author}")
         print("작가 : ")
         val author = readlnOrNull()!!.trim()
 
-        wiseSyaingService.modify(wiseSaying,content,author)
+        wiseSayingService.modify(wiseSaying, content, author)
 
         println("${id}번 명언을 수정하였습니다.")
     }
 
     fun actionBuild(rq: Rq) {
-        wiseSyaingService.build()
-        println("data.json 파일의 내용이 갱신되었습니다.")
+        wiseSayingService.build()
 
+        println("data.json 파일의 내용이 갱신되었습니다.")
     }
 }
